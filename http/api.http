@@ -1,5 +1,5 @@
 ### Base URL
-@baseUrl = https://ozamanime-api-production.up.railway.app/api/v1
+@baseUrl = http://ozamanime-api-production.up.railway.app/api/v1
 
 ### 1. Home
 GET {{baseUrl}}/home
