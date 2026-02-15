@@ -1,4 +1,4 @@
-const base_url = process.env.BASE_URL ? process.env.BASE_URL : 'https://ozamanime-api-production.up.railway.app/api/v1';
+const base_url = process.env.BASE_URL ? process.env.BASE_URL : 'http://localhost:3030';
 
 const hianimeApiDocs = {
   openapi: '3.0.0',
