@@ -1,5 +1,5 @@
 ### Base URL
-@baseUrl = https://ozamgameover.github.io/ozamanime-API/api/v1
+@baseUrl = https://ozamanime-api-production.up.railway.app/
 
 ### 1. Home
 GET {{baseUrl}}/home
