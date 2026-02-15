@@ -1,4 +1,4 @@
-const base_url = process.env.BASE_URL ? process.env.BASE_URL : 'http://localhost:3030';
+const base_url = process.env.BASE_URL ? process.env.BASE_URL : 'https://ozamgameover.github.io/ozamanime-API/api/v1';
 
 const hianimeApiDocs = {
   openapi: '3.0.0',
