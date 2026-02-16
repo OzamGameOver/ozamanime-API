@@ -55,7 +55,7 @@ app.get('/ping', (c) => {
 });
 app.get('/app-update', (c) => {
   return c.json({
-    latestVersion: "1.3.0", // change this when you release a new update
+    latestVersion: "1.0.0", // change this when you release a new update
     forceUpdate: false,      // true = user cannot skip
     title: "New Update Available 🚀",
     message: "Bug fixes, faster streaming, better performance",
