@@ -55,11 +55,11 @@ app.get('/ping', (c) => {
 });
 app.get('/app-update', (c) => {
   return c.json({
-    latestVersion: "1.0.0", // change this when you release a new update
+    latestVersion: "1.0.1", // change this when you release a new update
     forceUpdate: false,      // true = user cannot skip
     title: "New Update Available 🚀",
     message: "Bug fixes, faster streaming, better performance",
-    apkUrl: "https://drive.google.com/uc?id=APK_FILE_ID&export=download"
+    apkUrl: "https://drive.google.com/file/d/1LJoSWCBvTxcS9KdlZxQgiKEinKF_-EPa/view?usp=sharing"
   });
 });
 
