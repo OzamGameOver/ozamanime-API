@@ -59,7 +59,7 @@ app.get('/app-update', (c) => {
     forceUpdate: false,      // true = user cannot skip
     title: "New Update Available 🚀",
     message: "Bug fixes, faster streaming, better performance",
-    apkUrl: "https://drive.google.com/file/d/1LJoSWCBvTxcS9KdlZxQgiKEinKF_-EPa/view?usp=sharing"
+    apkUrl: "https://drive.usercontent.google.com/u/0/uc?id=1LJoSWCBvTxcS9KdlZxQgiKEinKF_-EPa&export=download"
   });
 });
 
