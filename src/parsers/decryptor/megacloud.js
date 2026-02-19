@@ -89,6 +89,19 @@ export async function megacloud({ selectedServer, id }) {
         throw new Error('Fallback failed: ' + fallbackError.message);
       }
     }
+    // === Arabic Subtitle Injection ===
+const animeSlug = id.split('::')[0];  // anyamal-tantei-kiruminzoo
+const arabicSubUrl = `https://api.yoursite.com/manual-sub/${animeSlug}/${epID}.vtt`;
+
+// تأكد إن tracks موجودة
+rawSourceData.tracks = rawSourceData.tracks ?? [];
+
+// أضف الترجمة العربية
+rawSourceData.tracks.push({
+  file: arabicSubUrl,
+  label: 'Arabic',
+  kind: 'captions',
+});
 
     return {
       id,
