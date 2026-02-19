@@ -5,14 +5,15 @@ import extractToken from '../helper/token.helper.js';
 
 const { baseurl } = config;
 
-export async function megacloud({ selectedServer, id }) {
-  //  selectedServer = {
-  //     index: 4,
-  //     type: "dub",
-  //     id: "668523",
-  //     name: "HD-1",
-  //   }
+export async function megacloud({ selectedServer, id, animeSlug }) {
+  // selectedServer = {
+  //   index: 4,
+  //   type: "dub",
+  //   id: "668523",
+  //   name: "HD-1",
+  // }
   // id  = steinsgate-3::ep=213
+  // animeSlug = steinsgate-3
 
   const epID = id.split('ep=').pop();
   const fallback_1 = 'megaplay.buzz';
@@ -21,7 +22,9 @@ export async function megacloud({ selectedServer, id }) {
   try {
     const [{ data: sourcesData }, { data: key }] = await Promise.all([
       axios.get(`${baseurl}/ajax/v2/episode/sources?id=${selectedServer.id}`),
-      axios.get('https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt'),
+      axios.get(
+        'https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt'
+      ),
     ]);
 
     const ajaxLink = sourcesData?.link;
@@ -39,10 +42,12 @@ export async function megacloud({ selectedServer, id }) {
     let rawSourceData = {};
 
     try {
-      // throw new Error('skip for now');
-      const token = await extractToken(`${baseUrl}/${sourceId}?k=1&autoPlay=0&oa=0&asi=1`);
+      const token = await extractToken(
+        `${baseUrl}/${sourceId}?k=1&autoPlay=0&oa=0&asi=1`
+      );
       const { data } = await axios.get(`${baseUrl}/getSources?id=${sourceId}&_k=${token}`);
       rawSourceData = data;
+
       const encrypted = rawSourceData?.sources;
       if (!encrypted) throw new Error('Encrypted source missing');
 
@@ -76,27 +81,27 @@ export async function megacloud({ selectedServer, id }) {
         );
 
         decryptedSources = [{ file: fallback_data.sources.file }];
-        if (!rawSourceData.tracks || rawSourceData.tracks.length === 0) {
-          rawSourceData.tracks = fallback_data.tracks ?? [];
-        }
-        if (!rawSourceData.intro) {
-          rawSourceData.intro = fallback_data.intro ?? null;
-        }
-        if (!rawSourceData.outro) {
-          rawSourceData.outro = fallback_data.outro ?? null;
-        }
+
+        rawSourceData.tracks = fallback_data.tracks ?? [];
+        rawSourceData.intro = rawSourceData.intro ?? fallback_data.intro ?? null;
+        rawSourceData.outro = rawSourceData.outro ?? fallback_data.outro ?? null;
       } catch (fallbackError) {
         throw new Error('Fallback failed: ' + fallbackError.message);
       }
     }
-const arabicSubUrl = `https://ozamanime.online/manual-sub/${animeSlug}/${epID}.vtt`;
 
-rawSourceData.tracks.push({
-  file: arabicSubUrl,
-  label: 'Arabic',
-  kind: 'captions',
-});
+    // إضافة الترجمة العربية بشكل آمن
+    if (!Array.isArray(rawSourceData.tracks)) rawSourceData.tracks = [];
 
+    if (animeSlug) {
+      const arabicSubUrl = `https://ozamanime.online/manual-sub/${animeSlug}/${epID}.vtt`;
+      rawSourceData.tracks.push({
+        file: arabicSubUrl,
+        label: 'Arabic',
+        kind: 'captions',
+        default: false,
+      });
+    }
 
     return {
       id,
@@ -111,7 +116,7 @@ rawSourceData.tracks.push({
       server: selectedServer.name,
     };
   } catch (error) {
-    console.error(`Error during decryptSources_v1(${id}):`, error.message);
+    console.error(`Error during megacloud(${id}):`, error.message);
     return null;
   }
 }
