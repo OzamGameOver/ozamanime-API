@@ -3,25 +3,25 @@ import { cors } from 'hono/cors';
 import { config } from 'dotenv';
 import { rateLimiter } from 'hono-rate-limiter';
 import { swaggerUI } from '@hono/swagger-ui';
+import { serveStatic } from 'hono/serve-static.file';
+import { logger } from 'hono/logger';
 
 import hiAnimeRoutes from './routes/routes.js';
-
 import { AppError } from './utils/errors.js';
 import { fail } from './utils/response.js';
 import hianimeApiDocs from './utils/swaggerUi.js';
-import { logger } from 'hono/logger';
-import { serveStatic } from 'hono/serve-static.file';
 
-// افترض فولدر manual-sub موجود في root الباك إند
-app.get('/manual-sub/*', serveStatic({ root: './manual-sub' }));
+// Load environment variables
+config();
 
 const app = new Hono();
 
-config();
+// Serve manual subtitles folder
+// افترض فولدر manual-sub موجود في root الباك إند
+app.get('/manual-sub/*', serveStatic({ root: './manual-sub' }));
 
+// CORS setup
 const origins = process.env.ORIGIN ? process.env.ORIGIN.split(',') : '*';
-
-// third party middlewares
 app.use(
   '*',
   cors({
@@ -31,12 +31,12 @@ app.use(
   })
 );
 
-// Apply the rate limiting middleware to all requests.
+// Rate limiter middleware
 app.use(
   rateLimiter({
     windowMs: process.env.RATE_LIMIT_WINDOW_MS || 60 * 1000,
     limit: process.env.RATE_LIMIT_LIMIT || 20,
-    standardHeaders: 'draft-6', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    standardHeaders: 'draft-6', // draft-6: `RateLimit-*` headers
     keyGenerator: (c) => {
       const ip = (c.req.header('x-forwarded-for') || '').split(',')[0].trim();
       return ip;
@@ -44,40 +44,39 @@ app.use(
   })
 );
 
-// middlewares
-// app.use('/api/v1/*', protect);
-// routes
-
+// Logger middleware
 app.use('/api/v1/*', logger());
 
+// Basic routes
 app.get('/', (c) => {
-  c.status(200);
-  return c.text('welcome to anime API 🎉 goto /ui for docs');
+  return c.text('Welcome to Anime API 🎉 Go to /ui for docs', 200);
 });
-app.get('/ping', (c) => {
-  return c.text('pong');
-});
+
+app.get('/ping', (c) => c.text('pong'));
+
 app.get('/app-update', (c) => {
   return c.json({
-    latestVersion: "1.3.0", // change this when you release a new update
+    latestVersion: '1.3.0', // change this when you release a new update
     forceUpdate: false,      // true = user cannot skip
-    title: "New Update Available 🚀",
-    message: "Bug fixes, faster streaming, better performance",
-    apkUrl: "https://drive.usercontent.google.com/u/0/uc?id=1LJoSWCBvTxcS9KdlZxQgiKEinKF_-EPa&export=download"
+    title: 'New Update Available 🚀',
+    message: 'Bug fixes, faster streaming, better performance',
+    apkUrl: 'https://drive.usercontent.google.com/u/0/uc?id=1LJoSWCBvTxcS9KdlZxQgiKEinKF_-EPa&export=download',
   });
 });
 
+// API routes
 app.route('/api/v1', hiAnimeRoutes);
-app.get('/doc', (c) => c.json(hianimeApiDocs));
 
-// Use the middleware to serve Swagger UI at /ui
+// Swagger/OpenAPI
+app.get('/doc', (c) => c.json(hianimeApiDocs));
 app.get('/ui', swaggerUI({ url: '/doc' }));
+
+// Global error handling
 app.onError((err, c) => {
   if (err instanceof AppError) {
     return fail(c, err.message, err.statusCode, err.details);
   }
-  console.error('unexpacted Error :' + err.message);
-
+  console.error('Unexpected Error: ' + err.message);
   return fail(c);
 });
 
