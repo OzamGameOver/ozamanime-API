@@ -3,7 +3,7 @@ import { cors } from 'hono/cors';
 import { config } from 'dotenv';
 import { rateLimiter } from 'hono-rate-limiter';
 import { swaggerUI } from '@hono/swagger-ui';
-import { serveStatic } from 'hono/serve-static.file';
+import { serveStatic } from 'hono/serve-static';
 import { logger } from 'hono/logger';
 
 import hiAnimeRoutes from './routes/routes.js';
