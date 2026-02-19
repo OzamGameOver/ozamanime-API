@@ -10,6 +10,10 @@ import { AppError } from './utils/errors.js';
 import { fail } from './utils/response.js';
 import hianimeApiDocs from './utils/swaggerUi.js';
 import { logger } from 'hono/logger';
+import { serveStatic } from 'hono/serve-static.file';
+
+// افترض فولدر manual-sub موجود في root الباك إند
+app.get('/manual-sub/*', serveStatic({ root: './manual-sub' }));
 
 const app = new Hono();
 
