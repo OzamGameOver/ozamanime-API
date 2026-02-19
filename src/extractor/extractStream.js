@@ -2,10 +2,24 @@
 import { megacloud } from '../parsers/decryptor/megacloud';
 
 export const extractStream = async ({ selectedServer, id }) => {
+  let streamData;
+
   if (selectedServer.name === 'HD-4') {
     const url = `https://megaplay.buzz/stream/s-2/${id.split('ep=').pop()}/${selectedServer.type}`;
-    return { streamingLink: url, servers: selectedServer.name };
+    streamData = {
+      streamingLink: url,
+      servers: selectedServer.name
+    };
+  } else {
+    streamData = await megacloud({ selectedServer, id });
   }
+
+  // 🔥 Attach subtitles
+  streamData.subtitles = await getEpisodeSubtitles(id);
+
+  return streamData;
+};
+
 
   const streamingLink = await megacloud({ selectedServer, id });
   // const streamingLink = await decryptMegacloud(
