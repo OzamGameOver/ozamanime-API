@@ -5,17 +5,21 @@ import { extractEpisodes } from '../extractor/extractEpisodes';
 import blacklist from '../blacklist/blacklist.json' assert { type: 'json' };
 
 const episodesController = async (c) => {
-  const id = c.req.param('id');
-    // 🔥 BLACKLIST CHECK
-  if (blacklist.ids.includes(Number(id))) {
+  // 1️⃣ Get raw ID from request
+  const rawId = c.req.param('id'); // e.g., "overflow-uncensored-17884"
+  if (!rawId) throw new validationError('id is required');
+
+  // 2️⃣ Extract numeric anime ID
+  const animeId = Number(rawId.split('-').pop()); // "17884" -> 17884
+
+  // 3️⃣ BLACKLIST CHECK
+  if (blacklist.ids.includes(animeId)) {
     throw new validationError('This anime is blocked.', 'blacklist');
   }
 
-  if (!id) throw new validationError('id is required');
-
-  const Referer = `/watch/${id}`;
-  const idNum = id.split('-').at(-1);
-  const ajaxUrl = `/ajax/v2/episode/list/${idNum}`;
+  // 4️⃣ Prepare AJAX request
+  const Referer = `/watch/${rawId}`;
+  const ajaxUrl = `/ajax/v2/episode/list/${animeId}`;
 
   try {
     const { data } = await axios.get(config.baseurl + ajaxUrl, {
@@ -24,13 +28,12 @@ const episodesController = async (c) => {
         ...config.headers,
       },
     });
-    
+
     const response = extractEpisodes(data.html);
     return response;
   } catch (err) {
     console.log(err.message);
-
-    throw new validationError('make sure the id is correct', { validIdEX: 'one-piece-100' });
+    throw new validationError('Make sure the id is correct', { validIdEX: 'one-piece-100' });
   }
 };
 
