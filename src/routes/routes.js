@@ -18,12 +18,9 @@ import schaduleController from '../controllers/schedule.controller';
 import nextEpisodeSchaduleController from '../controllers/nextEpisodeSchadule.controller';
 import filterController from '../controllers/filter.controller';
 import filterOptions from '../utils/filter';
-import { signupController, loginController } from '../controllers/auth.controller';
 
 const router = new Hono();
 
-router.post('/api/auth/signup', signupController);
-router.post('/api/auth/login', loginController);
 router.get('/', handler(documentationController));
 router.get('/home', handler(homepageController));
 router.get('/schadule', handler(schaduleController));
