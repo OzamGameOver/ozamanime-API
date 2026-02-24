@@ -1,9 +1,14 @@
 import { extractCharacterDetail } from '../extractor/extractCharacterDetail';
 import { axiosInstance } from '../services/axiosInstance';
 import { NotFoundError, validationError } from '../utils/errors';
+import blacklist from '../blacklist/blacklist.json' assert { type: 'json' };
 
 const characterDetailConroller = async (c) => {
   const id = c.req.param('id');
+    // 🔥 BLACKLIST CHECK
+  if (blacklist.ids.includes(Number(id))) {
+    throw new validationError('This anime is blocked.', 'blacklist');
+  }
 
   if (!id) throw new validationError('id is required');
 
