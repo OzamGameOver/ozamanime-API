@@ -3,24 +3,30 @@ import { axiosInstance } from '../services/axiosInstance';
 import { NotFoundError, validationError } from '../utils/errors';
 import blacklist from '../blacklist/blacklist.json' assert { type: 'json' };
 
-const characterDetailConroller = async (c) => {
-  const id = c.req.param('id');
-    // 🔥 BLACKLIST CHECK
-  if (blacklist.ids.includes(Number(id))) {
+const characterDetailController = async (c) => {
+  // 1️⃣ Get raw ID from request
+  const rawId = c.req.param('id'); // e.g., "overflow-uncensored-17884"
+  if (!rawId) throw new validationError('id is required');
+
+  // 2️⃣ Extract numeric anime ID
+  const animeId = Number(rawId.split('-').pop()); // "17884" -> 17884
+
+  // 3️⃣ BLACKLIST CHECK
+  if (blacklist.ids.includes(animeId)) {
     throw new validationError('This anime is blocked.', 'blacklist');
   }
 
-  if (!id) throw new validationError('id is required');
-
-  const result = await axiosInstance(`/${id.replace(':', '/')}`);
+  // 4️⃣ Fetch anime data
+  const result = await axiosInstance(`/${rawId.replace(':', '/')}`);
   if (!result.success) {
-    throw new validationError('make sure given endpoint is correct');
+    throw new validationError('Make sure given endpoint is correct');
   }
 
+  // 5️⃣ Extract character details
   const response = extractCharacterDetail(result.data);
-
   if (response.length < 1) throw new NotFoundError();
+
   return response;
 };
 
-export default characterDetailConroller;
+export default characterDetailController;
