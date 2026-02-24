@@ -26,21 +26,23 @@ let blacklist = [];
 
 try {
   const data = fs.readFileSync(blacklistPath, 'utf8');
-  blacklist = JSON.parse(data).blacklist || [];
+  // Use .ids since your JSON is { "ids": [17884, 12345] }
+  blacklist = JSON.parse(data).ids || [];
   console.log('Blacklist loaded:', blacklist);
 } catch (err) {
   console.error('Failed to load blacklist:', err);
 }
 
 // ------------------------
-// 2️⃣ Blacklist Middleware
+// 2️⃣ Blacklist Middleware (Redirect to Frontend /Blacklist)
 // ------------------------
 app.use('/watch/:anime', async (c, next) => {
   const animeParam = c.req.param('anime'); // e.g., "overflow-uncensored-17884"
   const animeId = Number(animeParam.split('-').pop()); // convert to number
 
   if (blacklist.includes(animeId)) {
-    return c.text('This anime is blocked 🚫', 403);
+    // Redirect to your frontend page
+    return c.redirect('/Blacklist');
   }
 
   await next();
