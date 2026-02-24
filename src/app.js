@@ -36,14 +36,15 @@ try {
 // 2️⃣ Blacklist Middleware
 // ------------------------
 app.use('/watch/:anime', async (c, next) => {
-  // Extract anime ID from URL
-  // e.g., /watch/overflow-uncensored-17884
-  const animeParam = c.req.param('anime'); // returns "overflow-uncensored-17884"
-  const animeId = animeParam.split('-').pop(); // "17884"
+  const animeParam = c.req.param('anime'); // e.g., "overflow-uncensored-17884"
+  const animeId = Number(animeParam.split('-').pop()); // convert to number
 
   if (blacklist.includes(animeId)) {
     return c.text('This anime is blocked 🚫', 403);
   }
+
+  await next();
+});
 
   await next();
 });
