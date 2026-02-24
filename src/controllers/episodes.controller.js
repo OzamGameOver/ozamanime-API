@@ -2,9 +2,14 @@ import axios from 'axios';
 import { validationError } from '../utils/errors';
 import config from '../config/config';
 import { extractEpisodes } from '../extractor/extractEpisodes';
+import blacklist from '../blacklist/blacklist.json' assert { type: 'json' };
 
 const episodesController = async (c) => {
   const id = c.req.param('id');
+    // 🔥 BLACKLIST CHECK
+  if (blacklist.ids.includes(Number(id))) {
+    throw new validationError('This anime is blocked.', 'blacklist');
+  }
 
   if (!id) throw new validationError('id is required');
 
