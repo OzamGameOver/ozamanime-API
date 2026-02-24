@@ -46,9 +46,6 @@ app.use('/watch/:anime', async (c, next) => {
   await next();
 });
 
-  await next();
-});
-
 // ------------------------
 // Serve manual subtitles folder
 // ------------------------
