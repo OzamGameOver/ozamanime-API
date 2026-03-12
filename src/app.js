@@ -24,6 +24,18 @@ const app = new Hono();
 const blacklistPath = path.join('./scr/blacklist/blacklist.json');
 let blacklist = [];
 
+// ------------------------
+// AdGate Script endpoint
+// ------------------------
+app.get('/api/v1/ad-script', (c) => {
+  const episodeId = c.req.query('episodeId'); // get ?episodeId=xxxx from frontend
+
+  // Optionally, customize per episode
+  const script = `<script src="https://pl28897891.effectivegatecpm.com/38/f9/f0/38f9f0a18dc6a68b7e18b9bddbc90a88.js" async></script>`;
+
+  return c.json({ script });
+});
+
 try {
   const data = fs.readFileSync(blacklistPath, 'utf8');
   // Use .ids since your JSON is { "ids": [17884, 12345] }
