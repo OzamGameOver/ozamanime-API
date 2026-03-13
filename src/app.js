@@ -24,42 +24,6 @@ const app = new Hono();
 const blacklistPath = path.join('./scr/blacklist/blacklist.json');
 let blacklist = [];
 
-// ------------------------
-// AdGate Script endpoint
-// ------------------------
-// Hono backend
-app.get('/api/v1/ad-script', (c) => {
-  const episodeId = c.req.query('episodeId'); // get ?episodeId=xxxx
-  const redirectUrl = c.req.query('redirect') || `/watch/${episodeId}`;
-
-  const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head><title>AdGate</title></head>
-      <body style="text-align:center; padding-top:50px;">
-        <h1>Please watch the ad to continue</h1>
-        <div id="ad-container"></div>
-
-        <script src="https://pl28897891.effectivegatecpm.com/38/f9/f0/38f9f0a18dc6a68b7e18b9bddbc90a88.js" async></script>
-
-        <script>
-          // 20-second countdown
-          let time = 20;
-          const timer = setInterval(() => {
-            time--;
-            if(time <= 0){
-              clearInterval(timer);
-              window.location.href = '${redirectUrl}';
-            }
-          }, 1000);
-        </script>
-      </body>
-    </html>
-  `;
-
-  return c.html(html);
-});
-
 try {
   const data = fs.readFileSync(blacklistPath, 'utf8');
   // Use .ids since your JSON is { "ids": [17884, 12345] }
